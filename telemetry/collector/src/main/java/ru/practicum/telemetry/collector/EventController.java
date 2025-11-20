@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.telemetry.collector.model.HubEvent;
-import ru.practicum.telemetry.collector.model.SensorEvent;
+import ru.practicum.telemetry.collector.dto.hub.HubEvent;
+import ru.practicum.telemetry.collector.dto.sensor.SensorEvent;
 
 @Slf4j
 @RestController
