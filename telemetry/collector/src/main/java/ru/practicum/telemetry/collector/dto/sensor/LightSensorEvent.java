@@ -3,6 +3,8 @@ package ru.practicum.telemetry.collector.dto.sensor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.avro.specific.SpecificRecordBase;
+import ru.yandex.practicum.kafka.telemetry.event.LightSensorAvro;
 
 @Getter
 @Setter
@@ -15,5 +17,14 @@ public class LightSensorEvent extends SensorEvent {
     @Override
     public SensorEventType getType() {
         return SensorEventType.LIGHT_SENSOR_EVENT;
+    }
+
+    @Override
+    public SpecificRecordBase toPayload() {
+        return LightSensorAvro
+                .newBuilder()
+                .setLinkQuality(linkQuality)
+                .setLuminosity(luminosity)
+                .build();
     }
 }

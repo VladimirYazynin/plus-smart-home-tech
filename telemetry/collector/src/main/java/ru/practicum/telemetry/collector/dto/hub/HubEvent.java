@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.practicum.telemetry.kafka.serializer.AvroPayload;
 
 import java.time.Instant;
 
@@ -24,7 +25,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @ToString
-public abstract class HubEvent {
+public abstract class HubEvent implements AvroPayload {
     private String id;
     @NotBlank
     private String hubId;

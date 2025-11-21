@@ -1,7 +1,15 @@
 package ru.practicum.telemetry.collector.dto.hub;
 
-public enum ScenarioCondition {
-    EQUALS,
-    GREATER_THAN,
-    LOWER_THAN;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
+public class ScenarioCondition {
+    private String sensorId;
+    private ConditionType type;
+    private ConditionOperation operation;
+    private int value;
 }

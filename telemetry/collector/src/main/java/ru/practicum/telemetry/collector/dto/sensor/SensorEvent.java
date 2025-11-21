@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.practicum.telemetry.kafka.serializer.AvroPayload;
 
 import java.time.Instant;
 
@@ -25,7 +26,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @ToString
-public abstract class SensorEvent {
+public abstract class SensorEvent implements AvroPayload {
     @NotBlank
     private String id;
     @NotBlank

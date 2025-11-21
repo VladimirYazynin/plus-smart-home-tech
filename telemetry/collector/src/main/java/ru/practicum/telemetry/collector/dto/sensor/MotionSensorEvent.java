@@ -3,6 +3,8 @@ package ru.practicum.telemetry.collector.dto.sensor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.avro.specific.SpecificRecordBase;
+import ru.yandex.practicum.kafka.telemetry.event.MotionSensorAvro;
 
 @Getter
 @Setter
@@ -16,5 +18,15 @@ public class MotionSensorEvent extends SensorEvent{
     @Override
     public SensorEventType getType() {
         return SensorEventType.MOTION_SENSOR_EVENT;
+    }
+
+    @Override
+    public SpecificRecordBase toPayload() {
+        return MotionSensorAvro
+                .newBuilder()
+                .setLinkQuality(linkQuality)
+                .setMotion(motion)
+                .setVoltage(voltage)
+                .build();
     }
 }

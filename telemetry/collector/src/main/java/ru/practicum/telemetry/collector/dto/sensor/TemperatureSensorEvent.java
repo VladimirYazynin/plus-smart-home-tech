@@ -3,6 +3,8 @@ package ru.practicum.telemetry.collector.dto.sensor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.avro.specific.SpecificRecordBase;
+import ru.yandex.practicum.kafka.telemetry.event.TemperatureSensorAvro;
 
 @Getter
 @Setter
@@ -16,4 +18,14 @@ public class TemperatureSensorEvent extends SensorEvent {
     public SensorEventType getType() {
         return SensorEventType.TEMPERATURE_SENSOR_EVENT;
     }
+
+    @Override
+    public SpecificRecordBase toPayload() {
+        return TemperatureSensorAvro
+                .newBuilder()
+                .setTemperatureC(temperatureC)
+                .setTemperatureF(temperatureF)
+                .build();
+    }
+
 }
