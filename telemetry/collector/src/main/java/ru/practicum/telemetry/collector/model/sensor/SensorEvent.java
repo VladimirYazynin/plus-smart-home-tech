@@ -1,9 +1,7 @@
-package ru.practicum.telemetry.collector.dto.sensor;
+package ru.practicum.telemetry.collector.model.sensor;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,12 +25,9 @@ import java.time.Instant;
 @Setter
 @ToString
 public abstract class SensorEvent implements AvroPayload {
-    @NotBlank
     private String id;
-    @NotBlank
     private String hubId;
     private Instant timestamp = Instant.now();
 
-    @NotNull
     public abstract SensorEventType getType();
 }

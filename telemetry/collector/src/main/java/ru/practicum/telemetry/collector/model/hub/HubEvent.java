@@ -1,9 +1,7 @@
-package ru.practicum.telemetry.collector.dto.hub;
+package ru.practicum.telemetry.collector.model.hub;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,10 +25,8 @@ import java.time.Instant;
 @ToString
 public abstract class HubEvent implements AvroPayload {
     private String id;
-    @NotBlank
     private String hubId;
-    private Instant timestamp =  Instant.now();
+    private Instant timestamp = Instant.now();
 
-    @NotNull
     public abstract HubEventType getType();
 }
