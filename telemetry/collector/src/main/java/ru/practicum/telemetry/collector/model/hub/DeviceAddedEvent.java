@@ -1,4 +1,4 @@
-package ru.practicum.telemetry.collector.dto.hub;
+package ru.practicum.telemetry.collector.model.hub;
 
 import lombok.Getter;
 import lombok.Setter;

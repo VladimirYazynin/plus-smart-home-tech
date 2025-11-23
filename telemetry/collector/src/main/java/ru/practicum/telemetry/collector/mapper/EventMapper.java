@@ -1,11 +1,11 @@
 package ru.practicum.telemetry.collector.mapper;
 
 import org.apache.avro.specific.SpecificRecordBase;
-import ru.practicum.telemetry.collector.dto.hub.HubEvent;
-import ru.practicum.telemetry.collector.dto.sensor.SensorEvent;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 
 public interface EventMapper {
-    SpecificRecordBase mapToAvro(HubEvent event);
+    SpecificRecordBase mapToAvro(HubEventProto event);
 
-    SpecificRecordBase mapToAvro(SensorEvent event);
+    SpecificRecordBase mapToAvro(SensorEventProto event);
 }
