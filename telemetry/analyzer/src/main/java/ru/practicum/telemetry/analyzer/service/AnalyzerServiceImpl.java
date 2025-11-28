@@ -36,11 +36,18 @@ import java.util.stream.Stream;
         private final ActionRepository actionRepository;
 
         public Optional<List<DeviceActionRequest>> analyze(SensorsSnapshotAvro value) {
-            List<DeviceActionRequest> scenarioList = scenarioRepository.findByHubId(value.getHubId()).stream()
-                    .filter(scenario -> scenario.checkConditions(value.getSensorsState()))
+            Map<String, SensorStateAvro> currentState = value.getSensorsState();
+
+            List<DeviceActionRequest> commands = scenarioRepository.findByHubId(value.getHubId()).stream()
+                    .filter(scenario -> {
+                        boolean matches = scenario.checkConditions(currentState);
+                        log.info("Scenario '{}' matches: {}", scenario.getName(), matches);
+                        return matches;
+                    })
                     .flatMap(this::mapToDeviceActionRequest)
                     .toList();
-            return scenarioList.isEmpty() ? Optional.empty() : Optional.of(scenarioList);
+
+            return commands.isEmpty() ? Optional.empty() : Optional.of(commands);
         }
 
         public void analyze(HubEventAvro value) {
