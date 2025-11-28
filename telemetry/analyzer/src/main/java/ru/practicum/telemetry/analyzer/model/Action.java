@@ -17,7 +17,7 @@ public class Action {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String type;
     private Integer value;
 
 }

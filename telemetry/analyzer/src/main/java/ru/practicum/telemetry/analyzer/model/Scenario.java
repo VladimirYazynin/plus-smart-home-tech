@@ -13,6 +13,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
 
 import java.util.Map;
 
@@ -46,5 +47,10 @@ public class Scenario {
             joinColumns = @JoinColumn(name = "scenario_id"),
             inverseJoinColumns = @JoinColumn(name = "action_id"))
     private Map<String, Action> actions;
+
+    public boolean checkConditions(Map<String, SensorStateAvro> sensorsState) {
+        return conditions.entrySet().stream()
+                .allMatch(entry -> entry.getValue().check(sensorsState.get(entry.getKey())));
+    }
 
 }
