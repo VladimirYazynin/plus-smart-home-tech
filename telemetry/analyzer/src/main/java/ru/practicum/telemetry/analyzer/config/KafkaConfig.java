@@ -55,7 +55,6 @@ public class KafkaConfig {
         public Properties toKafkaProperties() {
             Properties props = new Properties();
             props.setProperty("bootstrap.servers", bootstrapServers);
-            props.setProperty("topic", topic);
             props.setProperty("group.id", groupId);
             props.setProperty("key.deserializer", keyDeserializer);
             props.setProperty("value.deserializer", valueDeserializer);
