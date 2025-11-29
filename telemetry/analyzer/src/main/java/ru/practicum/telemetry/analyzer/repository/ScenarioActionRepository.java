@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ScenarioActionRepository extends JpaRepository<ScenarioAction, Long> {
     List<ScenarioAction> findAllByScenarioIdIn(List<Long> scenarioIds);
+
+    void deleteAllByScenarioId(Long scenarioId);
 }

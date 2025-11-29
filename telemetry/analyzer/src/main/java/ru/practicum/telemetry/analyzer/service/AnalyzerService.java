@@ -24,6 +24,7 @@ public class AnalyzerService {
 
             if (payload instanceof DeviceAddedEventAvro deviceAdded) {
                 hubEventStore.saveDevice(deviceAdded.getId(), event.getHubId());
+
                 log.info("Сенсор {} успешно доабвлен в хаб {}!", deviceAdded.getId(), event.getHubId());
             }
 
