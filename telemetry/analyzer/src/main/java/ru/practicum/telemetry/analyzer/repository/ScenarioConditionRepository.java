@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ScenarioConditionRepository extends JpaRepository<ScenarioCondition, Long> {
     List<ScenarioCondition> findAllByScenarioIdIn(List<Long> scenarioIds);
+
+    void deleteAllByScenarioId(Long scenarioId);
 }

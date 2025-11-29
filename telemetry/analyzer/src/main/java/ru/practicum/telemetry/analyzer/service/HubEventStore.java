@@ -2,6 +2,7 @@ package ru.practicum.telemetry.analyzer.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.telemetry.analyzer.model.Action;
 import ru.practicum.telemetry.analyzer.model.Condition;
@@ -21,6 +22,9 @@ import ru.practicum.telemetry.analyzer.repository.exception.EntityNotFoundExcept
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.ScenarioAddedEventAvro;
 
+import java.util.Optional;
+
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class HubEventStore {
@@ -34,21 +38,34 @@ public class HubEventStore {
 
     @Transactional
     public void saveDevice(String sensorId, String hubId) {
-        Sensor sensor = Sensor.builder()
-                .id(sensorId)
-                .hubId(hubId)
-                .build();
-        sensorRepository.save(sensor);
+        Optional<Sensor> foundSensor = sensorRepository.findByIdAndHubId(sensorId, hubId);
+        if (foundSensor.isEmpty()) {
+            Sensor sensor = Sensor.builder()
+                    .id(sensorId)
+                    .hubId(hubId)
+                    .build();
+            sensorRepository.save(sensor);
+        }
     }
 
     @Transactional
     public void saveScenario(HubEventAvro event, ScenarioAddedEventAvro added) {
-        Scenario newScenario = Scenario.builder()
-                .hubId(event.getHubId())
-                .name(added.getName())
-                .build();
+        Optional<Scenario> foundScenario =
+                scenarioRepository.findByHubIdAndName(event.getHubId(), added.getName());
+        Scenario scenario;
 
-        Scenario savedScenario = scenarioRepository.save(newScenario);
+        if (foundScenario.isEmpty()) {
+            Scenario newScenario = Scenario.builder()
+                    .hubId(event.getHubId())
+                    .name(added.getName())
+                    .build();
+
+            scenario = scenarioRepository.save(newScenario);
+        } else {
+            scenario = foundScenario.get();
+            scenarioActionRepository.deleteAllByScenarioId(scenario.getId());
+            scenarioConditionRepository.deleteAllByScenarioId(scenario.getId());
+        }
 
         added.getConditions().forEach(condition -> {
             Integer value = null;
@@ -67,17 +84,19 @@ public class HubEventStore {
             Condition savedCondition = conditionRepository.save(newCondition);
 
             Sensor sensor = sensorRepository.findByIdAndHubId(condition.getSensorId(), event.getHubId())
-                    .orElseThrow(() -> new EntityNotFoundException("Сенсор " + condition.getSensorId() + " не найден"));
+                    .orElseThrow(
+                            () -> new EntityNotFoundException("Сенсор " + condition.getSensorId() + " не найден")
+                    );
 
             ScenarioConditionId sensorId = ScenarioConditionId.builder()
-                    .scenarioId(savedScenario.getId())
+                    .scenarioId(scenario.getId())
                     .sensorId(sensor.getId())
                     .conditionId(savedCondition.getId())
                     .build();
 
             ScenarioCondition scenarioCondition = ScenarioCondition.builder()
                     .id(sensorId)
-                    .scenario(savedScenario)
+                    .scenario(scenario)
                     .sensor(sensor)
                     .condition(savedCondition)
                     .build();
@@ -97,14 +116,14 @@ public class HubEventStore {
                     .orElseThrow(() -> new EntityNotFoundException("Сенсор " + action.getSensorId() + " не найден"));
 
             ScenarioActionId actionId = ScenarioActionId.builder()
-                    .scenarioId(savedScenario.getId())
+                    .scenarioId(scenario.getId())
                     .sensorId(sensor.getId())
                     .actionId(saveAction.getId())
                     .build();
 
             ScenarioAction scenarioAction = ScenarioAction.builder()
                     .id(actionId)
-                    .scenario(savedScenario)
+                    .scenario(scenario)
                     .sensor(sensor)
                     .action(saveAction)
                     .build();
@@ -115,16 +134,12 @@ public class HubEventStore {
 
     @Transactional
     public void removeDevice(String sensorId, String hubId) {
-        Sensor sensor = sensorRepository.findByIdAndHubId(sensorId, hubId)
-                .orElseThrow(() -> new EntityNotFoundException("Сенсор " + sensorId + " не найден"));
-        sensorRepository.delete(sensor);
+        sensorRepository.deleteByIdAndHubId(sensorId, hubId);
     }
 
     @Transactional
     public void removeScenario(String name, String hubId) {
-        Scenario scenario = scenarioRepository.findByHubIdAndName(name, hubId)
-                .orElseThrow(() -> new EntityNotFoundException("Сценарий " + name + " не найден"));
-        scenarioRepository.delete(scenario);
+        scenarioRepository.deleteByNameAndHubId(name, hubId);
     }
 
 }
