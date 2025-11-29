@@ -1,54 +1,56 @@
 package ru.practicum.telemetry.analyzer.messaging;
 
-import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.errors.WakeupException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.stereotype.Component;
-import ru.practicum.telemetry.analyzer.service.AnalyzerService;
-import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
+import ru.practicum.telemetry.analyzer.config.GrpcConfig;
+import ru.practicum.telemetry.analyzer.service.ScenariosChecker;
+import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SnapshotProcessor implements Runnable {
+public class SnapshotProcessor {
 
-    private final AnalyzerService analyzerService;
-    private final HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient;
-    private final Consumer<String, SensorsSnapshotAvro> sensorsSnapshotAvroConsumer;
+    private final ConsumerFactory<String, SensorsSnapshotAvro> shapshotConsumerFactory;
+    private final ScenariosChecker scenariosChecker;
+    private final GrpcConfig grpcConfig;
 
-    @Override
-    public void run() {
-        try {
-            while (true) {
-                sensorsSnapshotAvroConsumer.poll(Duration.ofSeconds(3)).forEach(record -> {
-                    log.info("Получен снэпшот для хаба с id: {}", record.value().getHubId());
-                    analyzerService.analyze(record.value()).ifPresent(l -> {
-                        l.forEach(actionRequest -> {
-                            try {
-                                hubRouterClient.handleDeviceAction(actionRequest);
-                            } catch (StatusRuntimeException e) {
-                                log.error("Ошибка при gRPC-запросе к хабу:{}, сценарий:{},  описание ошибки:{}.",
-                                        actionRequest.getHubId(),
-                                        actionRequest.getScenarioName(),
-                                        e.getStatus().getDescription(), e);
-                            }
-                        });
+    @Value("${spring.kafka.topics.snapshots-topic-name}")
+    private String snapshotsTopic;
+
+    public void start() {
+        try (Consumer<String, SensorsSnapshotAvro> sensorsSnapshotConsumer = shapshotConsumerFactory.createConsumer()) {
+            sensorsSnapshotConsumer.subscribe(List.of(snapshotsTopic));
+
+            while(true) {
+                var snapshotRecords = sensorsSnapshotConsumer.poll(Duration.ofSeconds(3));
+                if (snapshotRecords.count() > 0) {
+                    log.info("Получено {} записей", snapshotRecords.count());
+
+                    List<SensorsSnapshotAvro> snapshotList = new ArrayList<>();
+                    snapshotRecords.forEach(record -> snapshotList.add(record.value()));
+                    snapshotList.forEach(snapshot -> {
+                        List<DeviceActionRequest> actions = scenariosChecker.checkScenarios(snapshot);
+                        actions.forEach(grpcConfig::sendDeviceActions);
                     });
-                });
+                    snapshotList.clear();
+                }
+
+                sensorsSnapshotConsumer.commitSync();
             }
         } catch (WakeupException ignored) {
-
         } catch (Exception e) {
-            log.error("Произошла ошибка обработки снэпшота", e);
-        } finally {
-            sensorsSnapshotAvroConsumer.commitSync();
-            sensorsSnapshotAvroConsumer.close();
+            log.error("Ошибка при агрегации событий от датчиков", e);
         }
     }
-
 }

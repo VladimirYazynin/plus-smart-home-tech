@@ -1,21 +1,24 @@
 package ru.practicum.telemetry.analyzer.config;
 
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
+import ru.yandex.practicum.grpc.telemetry.event.DeviceActionRequest;
 import ru.yandex.practicum.grpc.telemetry.hubrouter.HubRouterControllerGrpc;
 
-@Configuration
-@ConfigurationProperties("grpc.client.hub-router")
+@Slf4j
+@Service
 public class GrpcConfig {
 
-    @GrpcClient("hub-router")
-    private HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterControllerBlockingStub;
+    private final HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient;
 
-    @Bean
-    HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient() {
-        return this.hubRouterControllerBlockingStub;
+    public GrpcConfig(@GrpcClient("hub-router")
+                          HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient) {
+        this.hubRouterClient = hubRouterClient;
     }
 
+    public void sendDeviceActions(DeviceActionRequest request) {
+        log.info("Отправляем событие в хаб: {} для сценария: {}", request.getHubId(), request.getScenarioName());
+        hubRouterClient.handleDeviceAction(request);
+    }
 }
