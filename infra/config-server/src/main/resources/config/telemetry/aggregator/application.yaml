@@ -1,0 +1,27 @@
+server:
+  port: 9595
+
+aggregator:
+  kafka:
+    topic:
+      sensors: telemetry.sensors.v1
+      snapshots: telemetry.snapshots.v1
+
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: aggregator-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: ru.practicum.telemetry.kafka.deserializer.SensorEventAvroDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        fetch.min.bytes: 1
+        max.poll.records: 250
+        fetch.max.wait.ms: 1000
+        max.partition.fetch.bytes: 1048576
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: ru.practicum.telemetry.kafka.serializer.AvroSerializer
