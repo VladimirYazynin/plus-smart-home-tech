@@ -2,10 +2,12 @@ package ru.practicum.telemetry.aggregator;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import ru.practicum.telemetry.aggregator.messaging.AggregationStarter;
 
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class Aggregator {
 
     public static void main(String[] args) {
@@ -13,5 +15,4 @@ public class Aggregator {
         AggregationStarter aggregator = context.getBean(AggregationStarter.class);
         aggregator.start();
     }
-
 }
