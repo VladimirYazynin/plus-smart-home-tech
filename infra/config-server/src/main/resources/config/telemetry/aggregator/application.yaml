@@ -1,6 +1,3 @@
-server:
-  port: 9595
-
 aggregator:
   kafka:
     topic:
