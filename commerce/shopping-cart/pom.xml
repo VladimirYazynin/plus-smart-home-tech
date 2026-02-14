@@ -5,15 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ru.yandex.practicum</groupId>
-        <artifactId>smart-home-tech</artifactId>
+        <artifactId>commerce</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>commerce</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shopping-cart</artifactId>
 
-    <modules>
-        <module>shopping-store</module>
-        <module>shopping-cart</module>
-    </modules>
 </project>
