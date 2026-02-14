@@ -1,0 +1,8 @@
+server.port: 0
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:6542/store
+    username: store
+    password: 12345
+    driver-class-name: org.postgresql.Driver

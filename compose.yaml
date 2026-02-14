@@ -51,3 +51,21 @@ services:
       timeout: 5s
       interval: 5s
       retries: 10
+
+  db-shopping-store:
+    image: postgres:16.1
+    container_name: shopping-store
+    environment:
+      POSTGRES_USER: store
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: store
+    ports:
+      - "6542:5432"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
