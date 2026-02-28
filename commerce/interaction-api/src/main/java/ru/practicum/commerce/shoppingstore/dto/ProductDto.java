@@ -4,6 +4,11 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import ru.practicum.commerce.shoppingstore.enums.ProductCategory;
 import ru.practicum.commerce.shoppingstore.enums.ProductState;
 import ru.practicum.commerce.shoppingstore.enums.QuantityState;
@@ -11,6 +16,11 @@ import ru.practicum.commerce.shoppingstore.enums.QuantityState;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductDto {
 
     private UUID productId;
