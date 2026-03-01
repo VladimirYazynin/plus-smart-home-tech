@@ -69,3 +69,22 @@ services:
       timeout: 5s
       interval: 5s
       retries: 10
+
+
+  db-shopping-cart:
+    image: postgres:16.1
+    container_name: shopping-cart
+    environment:
+      POSTGRES_USER: cart
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: cart
+    ports:
+      - "6543:5432"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10

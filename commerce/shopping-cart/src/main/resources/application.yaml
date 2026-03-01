@@ -1,1 +1,8 @@
 server.port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:6543/cart
+    username: cart
+    password: 12345
+    driver-class-name: org.postgresql.Driver
