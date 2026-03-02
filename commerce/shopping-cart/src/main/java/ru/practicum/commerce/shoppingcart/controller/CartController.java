@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.commerce.shoppingcart.service.CartService;
 import ru.practicum.commerce.shoppingstore.dto.ChangeProductQuantityRequest;
 import ru.practicum.commerce.shoppingstore.dto.ShoppingCartDto;
+import ru.practicum.commerce.shoppingstore.feign.contract.CartContract;
 
 import java.util.Map;
 import java.util.Set;
@@ -22,15 +23,17 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/shopping-cart")
-public class CartController {
+public class CartController implements CartContract {
 
     private final CartService cartService;
 
+    @Override
     @GetMapping
     public ShoppingCartDto getUserShoppingCart(@RequestParam(value = "username") String username) {
         return cartService.getUserShoppingCart(username);
     }
 
+    @Override
     @PostMapping("/remove")
     public ShoppingCartDto deleteProductsFromCart(@RequestParam(value = "username") String username,
                                                   @RequestBody Set<UUID> productUUIDs) {
@@ -40,6 +43,7 @@ public class CartController {
         return result;
     }
 
+    @Override
     @PostMapping("/change-quantity")
     public ShoppingCartDto changeProductQuantityInCart(@RequestParam(value = "username") String username,
                                                        @RequestBody ChangeProductQuantityRequest newQuantity) {
@@ -51,6 +55,7 @@ public class CartController {
         return result;
     }
 
+    @Override
     @PutMapping
     public ShoppingCartDto addProducts(@RequestParam(value = "username") String username,
                            @RequestBody Map<UUID, Long> products) {
@@ -60,6 +65,7 @@ public class CartController {
         return result;
     }
 
+    @Override
     @DeleteMapping
     public void deactivateUserCart(@RequestParam(value = "username") String username) {
         log.debug("Получен запрос на деактивацию корзины пользователя: {}", username);

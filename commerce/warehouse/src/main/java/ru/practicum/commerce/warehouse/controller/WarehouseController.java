@@ -5,21 +5,24 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.commerce.shoppingstore.dto.*;
+import ru.practicum.commerce.shoppingstore.feign.contract.WarehouseContract;
 import ru.practicum.commerce.warehouse.service.WarehouseService;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/warehouse")
-public class WarehouseController {
+public class WarehouseController implements WarehouseContract {
 
     private final WarehouseService warehouseService;
 
+    @Override
     @GetMapping("/address")
     public AddressDto getWarehouseAddress() {
         return warehouseService.getWarehouseAddress();
     }
 
+    @Override
     @PutMapping
     public void addNewProductToWarehouse(@Valid @RequestBody NewProductInWarehouseRequest newProduct) {
         log.debug("Получен запрос на добавление нового товара на склад: {}", newProduct);
@@ -27,11 +30,13 @@ public class WarehouseController {
         log.debug("Новый товар успешно добавлен на склад");
     }
 
+    @Override
     @PostMapping("/check")
     public BookedProductsDto checkProductQuantity(@Valid @RequestBody ShoppingCartDto shoppingCartDto) {
         return warehouseService.checkProductQuantityInWarehouse(shoppingCartDto);
     }
 
+    @Override
     @PostMapping("/add")
     public void addProductsToWarehouse(AddProductToWarehouseRequest product) {
         log.debug("Получен запрос на пополнение товара: {}", product);
