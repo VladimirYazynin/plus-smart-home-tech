@@ -1,5 +1,6 @@
 package ru.practicum.commerce.shoppingcart.service;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
+    private final WarehouseClient warehouseClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -57,16 +59,68 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public ShoppingCartDto changeProductQuantityInCart(String username, ChangeProductQuantityRequest newQuantity) {
-        //TODO для реализации нужен Feign
-        return null;
+    public ShoppingCartDto changeProductQuantityInCart(String username, ChangeProductQuantityRequest productQuantity) {
+        checkUser(username);
+        if (productQuantity == null) {
+            throw new ValidationException("Запрос на обновление не может быть null");
+        }
+        CartEntity cartEntity = cartRepository.findByUsernameAndStatus(username, CartState.ACTIVE)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Активной корзины покупок для пользователя: %s не найдено", username)
+                ));
+        UUID productId = productQuantity.getProductId();
+        Long newQuantity = productQuantity.getNewQuantity();
+        Map<UUID, Long> products = cartEntity.getProducts();
+        if (products == null) {
+            products = new HashMap<>();
+            cartEntity.setProducts(products);
+        }
+        if (!products.containsKey(productId)) {
+            throw new ValidationException(String.format("Товар с uuid: %s отсутствует в корзине", productId));
+        }
+        Long oldQuantity = products.get(productId);
+        if (newQuantity == 0) {
+            products.remove(productId);
+        } else {
+            products.put(productId, newQuantity);
+        }
+        if (newQuantity > 0) {
+            try {
+                warehouseClient.checkProductQuantity(cartMapper.toShoppingCartDto(cartEntity));
+            } catch (FeignException e) {
+                products.put(productId, oldQuantity);
+                throw new RuntimeException("В настоящее время склад недоступен", e);
+            }
+        }
+        return cartMapper.toShoppingCartDto(cartRepository.save(cartEntity));
     }
 
     @Override
     @Transactional
     public ShoppingCartDto addProducts(String username, Map<UUID, Long> products) {
-        //TODO для реализации нужен Feign
-        return null;
+        checkUser(username);
+        if (products.isEmpty()) {
+            throw new ValidationException("Список продуктов не может быть пустым");
+        }
+        CartEntity cartEntity = cartRepository.findByUsername(username)
+                .orElseGet(() -> CartEntity.builder()
+                        .username(username)
+                        .status(CartState.ACTIVE)
+                        .products(new HashMap<>())
+                        .build());
+        cartEntity = cartRepository.save(cartEntity);
+        if (cartEntity.getProducts() == null) {
+            cartEntity.setProducts(new HashMap<>());
+        }
+        for (var e : products.entrySet()) {
+            cartEntity.getProducts().merge(e.getKey(), e.getValue(), Long::sum);
+        }
+        try {
+            warehouseClient.checkProductQuantity(cartMapper.toShoppingCartDto(cartEntity));
+        } catch (FeignException e) {
+            throw new RuntimeException("Склад не доступен", e);
+        }
+        return cartMapper.toShoppingCartDto(cartRepository.save(cartEntity));
     }
 
     @Override
