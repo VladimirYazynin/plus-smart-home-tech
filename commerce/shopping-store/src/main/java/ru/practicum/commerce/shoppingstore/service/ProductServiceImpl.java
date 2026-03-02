@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.commerce.shoppingstore.dto.PageResponseDto;
 import ru.practicum.commerce.shoppingstore.dto.ProductDto;
 import ru.practicum.commerce.shoppingstore.entity.ProductEntity;
 import ru.practicum.commerce.shoppingstore.enums.ProductCategory;
@@ -28,9 +29,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ProductDto> getProducts(ProductCategory category, Pageable pageable) {
+    public PageResponseDto<ProductDto> getProducts(ProductCategory category, Pageable pageable) {
         Page<ProductEntity> products = storeRepository.findAllByProductCategory(category, pageable);
-        return products.map(productMapper::toProductDto);
+        Page<ProductDto> productDto = products.map(productMapper::toProductDto);
+        return productMapper.toPageResponseDto(productDto);
     }
 
     @Override

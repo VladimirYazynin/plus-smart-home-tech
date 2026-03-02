@@ -1,8 +1,7 @@
 package ru.practicum.commerce.shoppingstore.service;
 
-
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import ru.practicum.commerce.shoppingstore.dto.PageResponseDto;
 import ru.practicum.commerce.shoppingstore.dto.ProductDto;
 import ru.practicum.commerce.shoppingstore.enums.ProductCategory;
 import ru.practicum.commerce.shoppingstore.enums.QuantityState;
@@ -11,7 +10,7 @@ import java.util.UUID;
 
 public interface ProductService {
 
-    Page<ProductDto> getProducts(ProductCategory category, Pageable pageable);
+    PageResponseDto<ProductDto> getProducts(ProductCategory category, Pageable pageable);
 
     ProductDto createProduct(ProductDto newProductDto);
 

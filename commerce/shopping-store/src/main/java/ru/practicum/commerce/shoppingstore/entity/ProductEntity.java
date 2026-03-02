@@ -23,6 +23,7 @@ import java.util.UUID;
 public class ProductEntity {
 
     @Id
+    @GeneratedValue
     private UUID productId;
 
     @Column(nullable = false)
