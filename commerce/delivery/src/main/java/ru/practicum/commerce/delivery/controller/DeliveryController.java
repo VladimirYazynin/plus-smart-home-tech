@@ -20,6 +20,7 @@ public class DeliveryController implements DeliveryContract {
 
     private final DeliveryService deliveryService;
 
+    @Override
     @PutMapping
     public DeliveryDto createDelivery(@Valid @RequestBody DeliveryDto newDeliveryDto) {
         log.debug("Получен запрос на создание новой доставки. Тело запроса: {}", newDeliveryDto);
@@ -28,6 +29,7 @@ public class DeliveryController implements DeliveryContract {
         return response;
     }
 
+    @Override
     @PostMapping("/successful")
     public void emulateSuccessfulDelivery(@RequestBody UUID orderId) {
         log.debug("Получен запрос на подтверждение успешной доставки заказа с uuid: {}", orderId);
@@ -35,6 +37,7 @@ public class DeliveryController implements DeliveryContract {
         log.debug("Доставка подтверждена");
     }
 
+    @Override
     @PostMapping("/picked")
     public void emulateItemPickup(@RequestBody UUID orderId) {
         log.debug("Получен запрос на подтверждение передачи заказа с uuid: {} в доставку", orderId);
@@ -42,6 +45,7 @@ public class DeliveryController implements DeliveryContract {
         log.debug("Заказ успешно передан в доставку");
     }
 
+    @Override
     @PostMapping("/failed")
     public void emulateDeliveryDeclined(@RequestBody UUID orderId) {
         log.debug("Получен запрос на установку статуса неудачного вручения заказа с uuid: {}", orderId);
@@ -49,6 +53,7 @@ public class DeliveryController implements DeliveryContract {
         log.debug("");
     }
 
+    @Override
     @PostMapping("/cost")
     public BigDecimal calculateOrderDeliveryCost(@Valid @RequestBody OrderDto orderDto) {
         log.debug("Получен запрос на расчёт полной стоимости доставки заказа: {}", orderDto);

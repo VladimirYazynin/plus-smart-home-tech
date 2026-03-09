@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.commerce.payment.service.PaymentService;
 import ru.practicum.commerce.shoppingstore.dto.OrderDto;
 import ru.practicum.commerce.shoppingstore.dto.PaymentDto;
+import ru.practicum.commerce.shoppingstore.feign.contract.PaymentContract;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -18,10 +19,11 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/payment")
-public class PaymentController {
+public class PaymentController implements PaymentContract {
 
     private final PaymentService paymentService;
 
+    @Override
     @PostMapping
     public PaymentDto initiatePayment(@Valid @RequestBody OrderDto orderDto) {
         log.debug("Начат процесс формирования оплаты для заказа: {}", orderDto);
@@ -30,6 +32,7 @@ public class PaymentController {
         return response;
     }
 
+    @Override
     @PostMapping("/totalCost")
     public BigDecimal calculateTotalOrderAmount(@Valid @RequestBody OrderDto orderDto) {
         log.debug("Получен запрос на расчёт полной стоимости для заказа: {}", orderDto);
@@ -38,6 +41,7 @@ public class PaymentController {
         return response;
     }
 
+    @Override
     @PostMapping("/refund")
     public void emulateSuccessfulPayment(@RequestBody UUID paymentId) {
         log.debug("Начат процесс подтверждения успешной оплаты: {}", paymentId);
@@ -45,6 +49,7 @@ public class PaymentController {
         log.debug("Оплата с uuid: {} прошла успешно", paymentId);
     }
 
+    @Override
     @PostMapping("/productCost")
     public BigDecimal calculateProductsTotal(@Valid @RequestBody OrderDto orderDto) {
         log.debug("Получен запрос на расчёт стоимости товаров в заказе: {}", orderDto);
@@ -53,6 +58,7 @@ public class PaymentController {
         return response;
     }
 
+    @Override
     @PostMapping("/failed")
     public void emulatePaymentDeclined(@RequestBody UUID paymentId) {
         log.debug("Начат процесс подтверждения отказа в оплаты: {}", paymentId);
