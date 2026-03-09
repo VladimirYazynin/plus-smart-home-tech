@@ -1,8 +1,20 @@
-server.port: 0
-
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:6546/order
-    username: order
-    password: 12345
-    driver-class-name: org.postgresql.Driver
+  application:
+    name: order
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000
+      discovery:
+        enabled: true
+        serviceId: config-server
+
+eureka:
+  client:
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka

@@ -4,12 +4,12 @@ CREATE TABLE IF NOT EXISTS orders (
     payment_id UUID,
     delivery_id UUID,
     state VARCHAR(50),
-    delivery_weight DOUBLE,
-    delivery_volume DOUBLE,
+    delivery_weight NUMERIC(10, 3),
+    delivery_volume NUMERIC(10, 3),
     fragile BOOLEAN,
-    total_price DOUBLE,
-    delivery_price DOUBLE,
-    product_price DOUBLE,
+    total_price NUMERIC(10, 2),
+    delivery_price NUMERIC(10, 2),
+    product_price NUMERIC(10, 2),
     username VARCHAR(50) NOT NULL UNIQUE
 );
 
