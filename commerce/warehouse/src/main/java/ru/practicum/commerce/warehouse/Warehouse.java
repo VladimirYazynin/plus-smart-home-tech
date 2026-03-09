@@ -8,9 +8,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @SpringBootApplication
 @EnableDiscoveryClient
 @ConfigurationPropertiesScan
-public class WareHouse {
+public class Warehouse {
 
     public static void main(String[] args) {
-        SpringApplication.run(WareHouse.class, args);
+        SpringApplication.run(Warehouse.class, args);
     }
 }
