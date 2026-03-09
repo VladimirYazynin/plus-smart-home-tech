@@ -142,4 +142,11 @@ public class CartServiceImpl implements CartService {
             throw new NotAuthorizedUserException("Имя пользователя не должно быть пустым.");
         }
     }
+
+    @Override
+    public String getUsernameById(UUID cartId) {
+        CartEntity cartEntity = cartRepository.findById(cartId)
+                .orElseThrow(() -> new NotFoundException(String.format("Корзина с таким uuid не найдена: {}", cartId)));
+        return cartEntity.getUsername();
+    }
 }

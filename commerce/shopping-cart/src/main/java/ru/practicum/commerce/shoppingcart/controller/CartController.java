@@ -72,4 +72,10 @@ public class CartController implements CartContract {
         cartService.deactivateUserCart(username);
         log.debug("Корзина успешно деактивирована");
     }
+
+    @Override
+    @GetMapping("/name/{cartId}")
+    public String getUsernameById(UUID cartId) {
+        return cartService.getUsernameById(cartId);
+    }
 }
