@@ -3,7 +3,11 @@ package ru.practicum.commerce.delivery.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.commerce.delivery.service.DeliveryService;
 import ru.practicum.commerce.shoppingstore.dto.DeliveryDto;
 import ru.practicum.commerce.shoppingstore.dto.OrderDto;
@@ -50,7 +54,7 @@ public class DeliveryController implements DeliveryContract {
     public void emulateDeliveryDeclined(@RequestBody UUID orderId) {
         log.debug("Получен запрос на установку статуса неудачного вручения заказа с uuid: {}", orderId);
         deliveryService.emulateDeliveryDeclined(orderId);
-        log.debug("");
+        log.debug("Неудачное вручение подтверждено");
     }
 
     @Override
