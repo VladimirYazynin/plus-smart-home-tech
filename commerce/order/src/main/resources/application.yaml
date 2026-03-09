@@ -2,7 +2,7 @@ server.port: 0
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:6544/order
+    url: jdbc:postgresql://localhost:6546/order
     username: order
     password: 12345
     driver-class-name: org.postgresql.Driver

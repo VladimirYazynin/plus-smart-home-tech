@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS orders (
-    order_id UUID DEFAULT gen_random_uuid()  PRIMARY KEY,
+    order_id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     shopping_cart_id UUID NOT NULL,
     payment_id UUID,
     delivery_id UUID,
@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS orders (
     fragile BOOLEAN,
     total_price DOUBLE,
     delivery_price DOUBLE,
-    product_price DOUBLE
+    product_price DOUBLE,
+    username VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS order_products (
