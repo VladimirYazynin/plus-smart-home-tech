@@ -18,4 +18,6 @@ public interface CartService {
     ShoppingCartDto addProducts(String username, Map<UUID, Long> products);
 
     void deactivateUserCart(String username);
+
+    String getUsernameById(UUID cartId);
 }
